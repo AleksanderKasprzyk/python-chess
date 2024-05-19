@@ -26,7 +26,7 @@ def main():
             if e.type == p.QUIT:
                 running = False
 
-        drawboard(screen)
+        drawgamestate(screen, gs)
         clock.tick(max_fps)
         p.display.flip()
 
