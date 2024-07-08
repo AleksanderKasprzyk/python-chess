@@ -19,12 +19,42 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = chessengine.gamestate()
+    validmoves = gs.getvalidmoves()
+    movemade = False
     loadimages()
     running = True
+    sqselected = ()
+    playerclick = []
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos()
+                column = location[0] // sq_size
+                row = location[1] // sq_size
+                if sqselected == (row, column):
+                    sqselected = ()
+                    playerclick = []
+                else:
+                    sqselected = (row, column)
+                    playerclick.append(sqselected)
+                if len(playerclick) == 2:
+                    move = chessengine.move(playerclick[0], playerclick[1], gs.board)
+                    print(move.chessnotation())
+                    if move in validmoves:
+                        gs.makemove(move)
+                        movemade = True
+                    sqselected = ()
+                    playerclick = []
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.undomove()
+                    movemade = True
+
+        if movemade:
+            validmoves = gs.getvalidmoves()
+            movemade = False
 
         drawgamestate(screen, gs)
         clock.tick(max_fps)
